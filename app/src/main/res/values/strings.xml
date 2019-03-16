@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">ShopManga</string>
+    <string name="Search_Button">Search</string>
+    <string name="Address_Search">Address</string>
 </resources>
