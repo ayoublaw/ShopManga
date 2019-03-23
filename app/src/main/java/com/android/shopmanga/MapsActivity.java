@@ -2,6 +2,8 @@ package com.android.shopmanga;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
+import android.graphics.BitmapFactory;
 import android.graphics.PointF;
 import android.net.Uri;
 import android.support.annotation.NonNull;
@@ -62,7 +64,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private ProgressDialog progressDoalog;
 
     private List<Manga> mangaList = new ArrayList<Manga>();
-    private Map<Feature,Manga> MangaMarkerList= new HashMap<Feature,Manga>();
+    private Manga mangaSelected;
     private boolean markerSelected = false;
 
     @Override
@@ -77,7 +79,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         progressDoalog = new ProgressDialog(MapsActivity.this);
         progressDoalog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        progressDoalog.setView(mapView);
         progressDoalog.show();
 
         Layout = findViewById(R.id.Layout);
@@ -202,7 +203,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         String url ="https://shopmangamobileapi.herokuapp.com/SelectMangas";
 
         JSONObject jsonBody = new JSONObject();
-        //jsonBody.put("name", getIntent().getDoubleExtra("name",0));
         jsonBody.put("name", getIntent().getStringExtra("mangaName"));
         jsonBody.put("lat", getIntent().getDoubleExtra("lat",0));
         jsonBody.put("lng",getIntent().getDoubleExtra("lng",0));
@@ -237,16 +237,35 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                             manga.getLat()
                     ));
             markerCoordinates.add(feature);
-
-            MangaMarkerList.put(feature,manga);
         }
+        List<Feature> AddressemarkerCoordinates = new ArrayList<>();
+        AddressemarkerCoordinates.add(
+                Feature.fromGeometry(
+                        Point.fromLngLat(
+                                getIntent().getDoubleExtra("lat",0),
+                                getIntent().getDoubleExtra("lng",0)))
+        );
+
+        loadedMapStyle.addImage("addresse-position-id", BitmapUtils.getBitmapFromDrawable(
+                getResources().getDrawable(R.drawable.mapbox_mylocation_icon_default)));
 
         loadedMapStyle.addImage("icon-id", BitmapUtils.getBitmapFromDrawable(
                 getResources().getDrawable(R.drawable.mapbox_marker_icon_default)));
 
-        loadedMapStyle.addImage("selected-marker-image", BitmapUtils.getBitmapFromDrawable(
-                getResources().getDrawable(R.drawable.mapbox_info_icon_selected)));
+        loadedMapStyle.addImage("selected-marker-image", BitmapFactory.decodeResource(
+                MapsActivity.this.getResources(),R.drawable.selected_icon));
 
+        //addresse Icons
+        loadedMapStyle.addSource(new GeoJsonSource("addresse-id",
+                FeatureCollection.fromFeatures(AddressemarkerCoordinates)));
+
+        loadedMapStyle.addLayer(new SymbolLayer("addresse-layer-id","addresse-id")
+                .withProperties(
+                        iconImage("addresse-position-id"),
+                        iconOffset(new Float[]{0f,-8f})
+                ));
+
+        //Mangas Icons
         loadedMapStyle.addSource(new GeoJsonSource("source-id",
                 FeatureCollection.fromFeatures(markerCoordinates)));
 
@@ -256,6 +275,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                         iconOffset(new Float[]{0f,-8f})
                 ));
 
+        //Mangas selected Icons
         loadedMapStyle.addSource(new GeoJsonSource("selected-marker"));
 
         loadedMapStyle.addLayer(new SymbolLayer("selected-marker-layer", "selected-marker")
@@ -295,6 +315,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                             "Price = " + m.getPrice() + "\n"
                                     + m.getAddress()
                     );
+                    mangaSelected = m;
                 }
                 }
             }
@@ -311,6 +332,13 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         detailsTextView.setVisibility(View.GONE);
         Layout.setVisibility(View.GONE);
 
+        detailsTextView.setText("");
     }
 
+    public void sendToMangaDetailsActivity(View view) {
+        Intent intent = new Intent(this, MangadetailsActivity.class);
+        intent.putExtra("manga",mangaSelected);
+        startActivity(intent);
+
+    }
 }
