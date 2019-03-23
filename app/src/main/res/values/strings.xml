@@ -4,4 +4,6 @@
     <string name="Address_Search">Address</string>
     <string name="title_activity_maps">MapsActivity</string>
     <string name="access_token">pk.eyJ1IjoiYXlvdWJtb3VocmkiLCJhIjoiY2p0Ymp4cmN4MGxkeDRhbGl0eTNoY25idyJ9.qf2m7yqI1u-syT4IBDbzcQ</string>
+    <string name="Details_button">details</string>
+    <string name="Manga_Name">Manga Name</string>
 </resources>

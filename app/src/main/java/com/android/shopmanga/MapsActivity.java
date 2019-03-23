@@ -1,16 +1,30 @@
 package com.android.shopmanga;
 
+import android.app.ProgressDialog;
 import android.content.Context;
-import android.graphics.BitmapFactory;
+import android.graphics.PointF;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
 
+import com.android.volley.Request.Method;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import com.mapbox.geojson.Feature;
 import com.mapbox.geojson.FeatureCollection;
 import com.mapbox.geojson.Point;
 import com.mapbox.mapboxsdk.Mapbox;
+import com.mapbox.mapboxsdk.annotations.Marker;
 import com.mapbox.mapboxsdk.camera.CameraPosition;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.maps.MapView;
@@ -23,55 +37,77 @@ import com.mapbox.mapboxsdk.style.layers.SymbolLayer;
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource;
 import com.mapbox.mapboxsdk.utils.BitmapUtils;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconImage;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconOffset;
 
-public class MapsActivity extends AppCompatActivity {
+public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback, MapboxMap.OnMapClickListener {
 
     private MapView mapView;
+    private MapboxMap mapboxMap;
+    private View Layout;
+    private Button detailsButton;
+    private TextView detailsTextView;
+    private ProgressDialog progressDoalog;
 
+    private List<Manga> mangaList = new ArrayList<Manga>();
+    private Map<Feature,Manga> MangaMarkerList= new HashMap<Feature,Manga>();
+    private boolean markerSelected = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-
         Mapbox.getInstance(this, getString(R.string.access_token));
+        setContentView(R.layout.activity_maps);
 
-        MapboxMapOptions options = new MapboxMapOptions()
-                .camera(new CameraPosition.Builder()
-                        .target(new LatLng(getIntent().getDoubleExtra("lat",0), getIntent().getDoubleExtra("lng",0)))
-                        .zoom(12)
-                        .build()
-                );
-
-        // create map
-        mapView = new MapView(this, options);
+        mapView = findViewById(R.id.mapView);
         mapView.onCreate(savedInstanceState);
-        mapView.getMapAsync(new OnMapReadyCallback() {
-            @Override
-            public void onMapReady(@NonNull MapboxMap mapboxMap) {
 
-                mapboxMap.setStyle(Style.OUTDOORS, new Style.OnStyleLoaded() {
-                    @Override
-                    public void onStyleLoaded(@NonNull Style style) {
-                        try {
-                            addMarkerIconsToMap(style);
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    }
-                });
+        progressDoalog = new ProgressDialog(MapsActivity.this);
+        progressDoalog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progressDoalog.setView(mapView);
+        progressDoalog.show();
+
+        Layout = findViewById(R.id.Layout);
+        detailsButton = findViewById(R.id.detailsButton);
+        detailsTextView = findViewById(R.id.detailTextView);
+
+        mapView.getMapAsync( this);
+    }
+    @Override
+    public void onMapReady(@NonNull MapboxMap mapboxMap) {
+        this.mapboxMap = mapboxMap;
+
+        mapboxMap.getUiSettings().setAttributionEnabled(false);
+        mapboxMap.getUiSettings().setLogoEnabled(false);
+
+        mapboxMap.setCameraPosition(new CameraPosition.Builder()
+                .target(new LatLng(getIntent().getDoubleExtra("lat",0), getIntent().getDoubleExtra("lng",0)))
+                .zoom(12)
+                .build());
+        mapboxMap.setStyle(Style.OUTDOORS, new Style.OnStyleLoaded() {
+            @Override
+            public void onStyleLoaded(@NonNull Style style) {
+                try {
+                    sendSelectRequest(style);
+                    progressDoalog.dismiss();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         });
-
-        setContentView(mapView);
     }
     @Override
     public void onStart() {
@@ -114,50 +150,167 @@ public class MapsActivity extends AppCompatActivity {
         super.onSaveInstanceState(outState);
         mapView.onSaveInstanceState(outState);
     }
-    private static String convertStreamToString(InputStream is) throws Exception {
+    @Override
+    public boolean onMapClick(@NonNull LatLng point) {
+        Style style = mapboxMap.getStyle();
+        if (style != null) {
+            final SymbolLayer selectedMarkerSymbolLayer =
+                    (SymbolLayer) style.getLayer("selected-marker-layer");
 
-        BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+            final PointF pixel = mapboxMap.getProjection().toScreenLocation(point);
+            List<Feature> features = mapboxMap.queryRenderedFeatures(pixel, "layer-id");
+            List<Feature> selectedFeature = mapboxMap.queryRenderedFeatures(
+                    pixel, "selected-marker-layer");
+            if (selectedFeature.size() > 0 && markerSelected) {
+                return false;
+            }
 
-        StringBuilder sb = new StringBuilder();
-        String line = null;
-        while ((line = reader.readLine()) != null) {
-            sb.append(line).append("\n");
+            if(selectedFeature.size() > 0 && !markerSelected){
+                selectMarker(selectedMarkerSymbolLayer);
+                MakeLayoutVisible(selectedFeature.get(0));
+                return true;
+            }
+
+            if (features.isEmpty()) {
+                if (markerSelected) {
+                    deselectMarker(selectedMarkerSymbolLayer);
+                    MakeLayoutInVisible();
+                }
+                return false;
+            }
+
+
+            GeoJsonSource source = style.getSourceAs("selected-marker");
+            if (source != null) {
+                source.setGeoJson(FeatureCollection.fromFeatures(
+                        new Feature[]{Feature.fromGeometry(features.get(0).geometry())}));
+            }
+
+            if (markerSelected) {
+                deselectMarker(selectedMarkerSymbolLayer);
+            }
+            if (features.size() > 0) {
+                selectMarker(selectedMarkerSymbolLayer);
+                MakeLayoutVisible(features.get(0));
+            }
         }
-        reader.close();
-        return sb.toString();
+        return true;
     }
 
-    public static String getStringFromFile(Uri fileUri, Context context) throws Exception {
-        InputStream fin = context.getContentResolver().openInputStream(fileUri);
+    private void sendSelectRequest(@NonNull Style loadedMapStyle) throws JSONException {
+        RequestQueue queue = Volley.newRequestQueue(this);
+        String url ="https://shopmangamobileapi.herokuapp.com/SelectMangas";
 
-        String ret = convertStreamToString(fin);
+        JSONObject jsonBody = new JSONObject();
+        //jsonBody.put("name", getIntent().getDoubleExtra("name",0));
+        jsonBody.put("name", getIntent().getStringExtra("mangaName"));
+        jsonBody.put("lat", getIntent().getDoubleExtra("lat",0));
+        jsonBody.put("lng",getIntent().getDoubleExtra("lng",0));
 
-        fin.close();
-        return ret;
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
+                (Method.POST, url, jsonBody, new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            TransformeResponseToMangas(response);
+                            Log.d("resultas", String.valueOf(response));
+                            addMarkerIconsToMap(loadedMapStyle, response);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.d("webRequetteErreur", error.toString());
+                    }
+                });
+        queue.add(jsonObjectRequest);
     }
-
-    private void addMarkerIconsToMap(@NonNull Style loadedMapStyle) throws Exception {
-        //Uri uriMap = Uri.parse("https://dl.dropbox.com/s/9jln7v48lp3lb7e/data.geojson?dl=0");
-        //String geoJsonString = getStringFromFile(uriMap,MapsActivity.this);
+    private void addMarkerIconsToMap(@NonNull Style loadedMapStyle, JSONObject response) throws Exception {
 
         List<Feature> markerCoordinates = new ArrayList<>();
-        markerCoordinates.add(Feature.fromGeometry(
-                Point.fromLngLat(-71.065634, 42.354950))); // Boston Common Park
-        markerCoordinates.add(Feature.fromGeometry(
-                Point.fromLngLat(-51.097293, 22.346645))); // Fenway Park
-        markerCoordinates.add(Feature.fromGeometry(
-                Point.fromLngLat(-31.053694, 62.363725)));
+        for(Manga manga: mangaList){
+            Feature feature = Feature.fromGeometry(
+                    Point.fromLngLat(
+                            manga.getLng(),
+                            manga.getLat()
+                    ));
+            markerCoordinates.add(feature);
+
+            MangaMarkerList.put(feature,manga);
+        }
 
         loadedMapStyle.addImage("icon-id", BitmapUtils.getBitmapFromDrawable(
                 getResources().getDrawable(R.drawable.mapbox_marker_icon_default)));
 
+        loadedMapStyle.addImage("selected-marker-image", BitmapUtils.getBitmapFromDrawable(
+                getResources().getDrawable(R.drawable.mapbox_info_icon_selected)));
+
         loadedMapStyle.addSource(new GeoJsonSource("source-id",
                 FeatureCollection.fromFeatures(markerCoordinates)));
 
-        loadedMapStyle.addLayer(new SymbolLayer("layer-id",
-                "source-id").withProperties(
-                iconImage("icon-id"),
-                iconOffset(new Float[]{0f,-8f})
-        ));
+        loadedMapStyle.addLayer(new SymbolLayer("layer-id","source-id")
+                .withProperties(
+                        iconImage("icon-id"),
+                        iconOffset(new Float[]{0f,-8f})
+                ));
+
+        loadedMapStyle.addSource(new GeoJsonSource("selected-marker"));
+
+        loadedMapStyle.addLayer(new SymbolLayer("selected-marker-layer", "selected-marker")
+                .withProperties(
+                        iconImage("icon-id"),
+                        iconOffset(new Float[]{0f, -9f})
+                ));
+
+        mapboxMap.addOnMapClickListener(MapsActivity.this);
+
     }
+
+    private void TransformeResponseToMangas(JSONObject response) throws JSONException {
+        JSONArray responseArray = response.getJSONObject("map").getJSONObject("resultas").getJSONArray("myArrayList");
+        for(int i=0; i<responseArray.length(); i++){
+            mangaList.add(new Manga(responseArray.getJSONObject(i)));
+        }
+    }
+
+    private void selectMarker(final SymbolLayer iconLayer) {
+        markerSelected = true;
+        iconLayer.setProperties(PropertyFactory.iconImage("selected-marker-image"));
+
+    }
+    private void deselectMarker(final SymbolLayer iconLayer) {
+        markerSelected = false;
+        iconLayer.setProperties(PropertyFactory.iconImage("icon-id"));
+    }
+
+    private void AddMangaToLayout(Feature feature){
+        for(Manga m: mangaList){
+            final PointF pixel = mapboxMap.getProjection().toScreenLocation(new LatLng(m.getLat(),m.getLng()));
+            List<Feature> fs = mapboxMap.queryRenderedFeatures(pixel, "layer-id");
+            if(!fs.isEmpty()){
+                if(fs.get(0).geometry().equals(feature.geometry())){
+                    detailsTextView.setText(
+                            "Price = " + m.getPrice() + "\n"
+                                    + m.getAddress()
+                    );
+                }
+                }
+            }
+    }
+    private void MakeLayoutVisible(Feature feature){
+        AddMangaToLayout(feature);
+        detailsButton.setVisibility(View.VISIBLE);
+        detailsTextView.setVisibility(View.VISIBLE);
+        Layout.setVisibility(View.VISIBLE);
+
+    }
+    private void MakeLayoutInVisible(){
+        detailsButton.setVisibility(View.GONE);
+        detailsTextView.setVisibility(View.GONE);
+        Layout.setVisibility(View.GONE);
+
+    }
+
 }
