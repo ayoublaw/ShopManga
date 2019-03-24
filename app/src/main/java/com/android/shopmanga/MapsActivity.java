@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.android.volley.Request.Method;
@@ -61,7 +62,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private View Layout;
     private Button detailsButton;
     private TextView detailsTextView;
-    private ProgressDialog progressDoalog;
+    private ProgressBar progressBar;
 
     private List<Manga> mangaList = new ArrayList<Manga>();
     private Manga mangaSelected;
@@ -77,9 +78,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         mapView = findViewById(R.id.mapView);
         mapView.onCreate(savedInstanceState);
 
-        progressDoalog = new ProgressDialog(MapsActivity.this);
-        progressDoalog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        progressDoalog.show();
+        progressBar = findViewById(R.id.progressBar);
 
         Layout = findViewById(R.id.Layout);
         detailsButton = findViewById(R.id.detailsButton);
@@ -103,7 +102,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             public void onStyleLoaded(@NonNull Style style) {
                 try {
                     sendSelectRequest(style);
-                    progressDoalog.dismiss();
+                    progressBar.setVisibility(View.GONE);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -250,7 +249,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 getResources().getDrawable(R.drawable.mapbox_mylocation_icon_default)));
 
         loadedMapStyle.addImage("icon-id", BitmapUtils.getBitmapFromDrawable(
-                getResources().getDrawable(R.drawable.mapbox_marker_icon_default)));
+                getResources().getDrawable(R.drawable.mapbox_markerview_icon_default)));
 
         loadedMapStyle.addImage("selected-marker-image", BitmapFactory.decodeResource(
                 MapsActivity.this.getResources(),R.drawable.selected_icon));
