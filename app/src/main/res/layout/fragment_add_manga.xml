@@ -16,8 +16,8 @@
         android:layout_marginEnd="16dp"
         android:layout_marginRight="16dp"
         android:ems="10"
+        android:hint="@string/AddMangaFragement_name"
         android:inputType="textPersonName"
-        android:text="@string/AddMangaFragement_name"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -33,7 +33,7 @@
         android:layout_marginRight="16dp"
         android:ems="10"
         android:inputType="textPersonName"
-        android:text="@string/AddMangaFragement_sellerName"
+        android:hint="@string/AddMangaFragement_sellerName"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/AddMangaPrice" />
@@ -49,7 +49,7 @@
         android:layout_marginRight="16dp"
         android:ems="10"
         android:inputType="textPersonName"
-        android:text="@string/AddMangaFragement_telephone"
+        android:hint="@string/AddMangaFragement_telephone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/AddMangaSellerName" />
@@ -65,7 +65,7 @@
         android:layout_marginRight="16dp"
         android:ems="10"
         android:inputType="textPersonName"
-        android:text="@string/Address_Search"
+        android:hint="@string/Address_Search"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/AddMangaTelephone" />
@@ -79,7 +79,7 @@
         android:layout_marginTop="52dp"
         android:layout_marginEnd="16dp"
         android:layout_marginRight="16dp"
-        android:text="Button"
+        android:text="@string/AddMangaFragement_search_button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
@@ -96,7 +96,7 @@
         android:layout_marginRight="16dp"
         android:ems="10"
         android:inputType="number"
-        android:text="@string/AddMangaFragement_price"
+        android:hint="@string/AddMangaFragement_price"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/AddMangaName" />

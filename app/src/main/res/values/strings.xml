@@ -7,10 +7,11 @@
     <string name="Details_button">details</string>
     <string name="Manga_Name">Manga Name</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="AddMangaFragement_name">Name</string>
     <string name="AddMangaFragement_price">price</string>
     <string name="AddMangaFragement_sellerName">Seller Name</string>
     <string name="AddMangaFragement_telephone">Telephone</string>
+    <string name="AddMangaFragement_search_button">Search</string>
+
 </resources>
