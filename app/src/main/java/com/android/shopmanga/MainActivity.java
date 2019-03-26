@@ -1,119 +1,69 @@
 package com.android.shopmanga;
 
-import android.app.Activity;
-import android.content.Intent;
-import android.location.Address;
-import android.location.Geocoder;
-import android.os.AsyncTask;
+import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.EditText;
-import android.widget.Spinner;
+import android.support.v7.widget.Toolbar;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
-    String addressetext, mangaNametext;
+
+    private Toolbar toolbar;
+    private TabLayout tabLayout;
+    private ViewPager viewPager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        toolbar = findViewById(R.id.mytoolbar);
+        setSupportActionBar(toolbar);
+
+        viewPager = findViewById(R.id.viewpager);
+        setViewPager(viewPager);
+
+        tabLayout = findViewById(R.id.mytabs);
+        tabLayout.setupWithViewPager(viewPager);
     }
-
-    public void ShowMaps(View view) {
-        Geocoder geo = new Geocoder(this);
-        double lat = 0,lng = 0;
-
-        EditText addresse = findViewById(R.id.autoCompleteTextView);
-        EditText mangaName = findViewById(R.id.MangaName);
-
-        addressetext = addresse.getText().toString();
-        mangaNametext = mangaName.getText().toString();
-
-        LatLngTask myTask = new LatLngTask(this);  //can pass other variables as needed
-        myTask.execute(addressetext,mangaNametext);
+    private void setViewPager(ViewPager viewPager) {
+        ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
+        adapter.addFragment(new AddMangaFragment(), "AddManga");
+        adapter.addFragment(new SearchMangaFragment(),"SearchManga");
+        viewPager.setAdapter(adapter);
     }
+    class ViewPagerAdapter extends FragmentPagerAdapter {
+        private final List<Fragment> mFragmentList = new ArrayList<>();
+        private final List<String> mFragmentTitleList = new ArrayList<>();
 
-    public class LatLngTask extends AsyncTask<String, Void , String>{
-
-        Activity activity;
-
-        public LatLngTask(Activity activity){
-            this.activity = activity;
+        public ViewPagerAdapter(FragmentManager manager) {
+            super(manager);
         }
 
         @Override
-        protected String doInBackground(String... text) {
-            StringBuilder jsonResults = new StringBuilder();
-            String googleMapUrl = "https://maps.googleapis.com/maps/api/geocode/json?address="
-                    + text[0]+ "&sensor=false&key=AIzaSyAejI8898winqzlekeYkhyJ2m1ZEPb3im0";
-
-            try {
-                URL  url = new URL(googleMapUrl);
-                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-                InputStreamReader in = new InputStreamReader(
-                conn.getInputStream());
-                int read;
-                char[] buff = new char[1024];
-                while ((read = in.read(buff)) != -1) {
-                jsonResults.append(buff, 0, read);
-                }
-                return jsonResults.toString();
-
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return null;
+        public Fragment getItem(int position) {
+            return mFragmentList.get(position);
         }
-        protected void onPostExecute(String response) {
-            if(response == null) {
-                response = "THERE WAS AN ERROR";
-            }
-            Log.i("INFO", response);
-            try {
-                JSONObject jsonObj = new JSONObject(response);
-                JSONArray resultJsonArray = jsonObj.getJSONArray("results");
 
-                JSONObject before_geometry_jsonObj = resultJsonArray
-                        .getJSONObject(0);
+        @Override
+        public int getCount() {
+            return mFragmentList.size();
+        }
 
-                JSONObject geometry_jsonObj = before_geometry_jsonObj
-                        .getJSONObject("geometry");
+        public void addFragment(Fragment fragment, String title) {
+            mFragmentList.add(fragment);
+            mFragmentTitleList.add(title);
+        }
 
-                JSONObject location_jsonObj = geometry_jsonObj
-                        .getJSONObject("location");
-
-                String lat_helper = location_jsonObj.getString("lat");
-                double lat = Double.valueOf(lat_helper);
-
-
-                String lng_helper = location_jsonObj.getString("lng");
-                double lng = Double.valueOf(lng_helper);
-
-                Intent intent = new Intent(this.activity, MapsActivity.class);
-                intent.putExtra("lat",lat);
-                intent.putExtra("lng",lng);
-                intent.putExtra("mangaName",mangaNametext);
-                startActivity(intent);
-
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
+        @Override
+        public CharSequence getPageTitle(int position) {
+            return mFragmentTitleList.get(position);
         }
     }
 }
