@@ -12,8 +12,8 @@
         mapbox:mapbox_cameraTargetLat="42.353517"
         mapbox:mapbox_cameraTargetLng="-71.078625"
         mapbox:mapbox_cameraZoom="12"
-        tools:layout_editor_absoluteX="16dp"
-        tools:layout_editor_absoluteY="0dp">
+        tools:layout_editor_absoluteX="0dp"
+        tools:layout_editor_absoluteY="29dp">
 
     </com.mapbox.mapboxsdk.maps.MapView>
 
@@ -37,6 +37,7 @@
             android:layout_marginEnd="8dp"
             android:layout_marginRight="8dp"
             android:layout_marginBottom="8dp"
+            android:onClick="sendToMangaDetailsActivity"
             android:text="@string/Details_button"
             android:visibility="gone"
             mapbox:layout_constraintBottom_toBottomOf="parent"
@@ -50,11 +51,26 @@
             android:layout_marginStart="16dp"
             android:layout_marginLeft="16dp"
             android:layout_marginBottom="8dp"
-            android:text="TextView"
             android:textColor="@android:color/black"
             android:visibility="gone"
             mapbox:layout_constraintBottom_toBottomOf="parent"
             mapbox:layout_constraintStart_toStartOf="parent" />
     </android.support.constraint.ConstraintLayout>
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginBottom="8dp"
+        mapbox:layout_constraintBottom_toBottomOf="parent"
+        mapbox:layout_constraintEnd_toEndOf="parent"
+        mapbox:layout_constraintStart_toStartOf="parent"
+        mapbox:layout_constraintTop_toTopOf="@+id/mapView" />
 
 </android.support.constraint.ConstraintLayout>

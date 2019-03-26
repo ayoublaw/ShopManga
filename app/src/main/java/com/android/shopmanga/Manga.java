@@ -3,7 +3,9 @@ package com.android.shopmanga;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class Manga {
+import java.io.Serializable;
+
+public class Manga implements Serializable {
     private String address;
     private double lat;
     private double lng;
