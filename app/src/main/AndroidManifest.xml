@@ -12,8 +12,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MangadetailsActivity"
-            android:parentActivityName=".MapsActivity"></activity>
+        <activity android:name=".List_MangaActivity"></activity>
+        <activity
+            android:name=".MangadetailsActivity"
+            android:parentActivityName=".MapsActivity" />
         <activity
             android:name=".MapsActivity"
             android:label="@string/title_activity_maps"
