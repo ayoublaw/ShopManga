@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.graphics.PointF;
 import android.net.Uri;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -47,6 +48,7 @@ import org.json.JSONObject;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -336,8 +338,15 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     public void sendToMangaDetailsActivity(View view) {
         Intent intent = new Intent(this, MangadetailsActivity.class);
-        intent.putExtra("manga",mangaSelected);
+        intent.putExtra("manga", (Serializable) mangaSelected);
         startActivity(intent);
 
+    }
+
+    public void listMangaView(View view) {
+
+        Intent intent = new Intent(this, List_MangaActivity.class);
+        intent.putParcelableArrayListExtra("mangaList", (ArrayList<? extends Parcelable>) mangaList);
+        startActivity(intent);
     }
 }

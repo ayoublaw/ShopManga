@@ -1,11 +1,14 @@
 package com.android.shopmanga;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.Serializable;
 
-public class Manga implements Serializable {
+public class Manga implements Serializable, Parcelable {
     private String address;
     private double lat;
     private double lng;
@@ -88,5 +91,42 @@ public class Manga implements Serializable {
 
     public void setMangaName(String mangaName) {
         this.mangaName = mangaName;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(address);
+        dest.writeDouble(lat);
+        dest.writeDouble(lng);
+        dest.writeInt(price);
+        dest.writeString(sellerName);
+        dest.writeString(telephone);
+        dest.writeString(mangaName);
+    }
+    public static final Parcelable.Creator<Manga> CREATOR
+            = new Parcelable.Creator<Manga>() {
+        public Manga createFromParcel(Parcel in) {
+            return new Manga(in);
+        }
+
+        public Manga[] newArray(int size) {
+            return new Manga[size];
+        }
+    };
+
+    public Manga(){}
+    public Manga(Parcel in){
+        address = in.readString();
+        lat = in.readDouble();
+        lng = in.readDouble();
+        price = in.readInt();
+        sellerName = in.readString();
+        telephone = in.readString();
+        mangaName = in.readString();
     }
 }

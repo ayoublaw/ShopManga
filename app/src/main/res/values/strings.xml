@@ -13,4 +13,5 @@
     <string name="AddMangaFragement_price">price</string>
     <string name="AddMangaFragement_sellerName">Seller Name</string>
     <string name="AddMangaFragement_telephone">Telephone</string>
+    <string name="Button_ListManga">Liste</string>
 </resources>
