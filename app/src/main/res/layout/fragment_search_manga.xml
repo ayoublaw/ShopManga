@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     tools:context=".SearchMangaFragment">
 
-    <EditText
+    <AutoCompleteTextView
         android:id="@+id/MangaName"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -28,14 +28,14 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
-        app:layout_constraintTop_toBottomOf="@+id/MangaName"
-        tools:layout_editor_absoluteX="16dp" >
+        app:layout_constraintTop_toBottomOf="@+id/VolumeList"
+        tools:layout_editor_absoluteX="0dp">
+
         <Button
             android:id="@+id/MyPositionButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="My Position"
-            />
+            android:text="My Position" />
     </fragment>
     <Button
         android:id="@+id/Searchbutton"
@@ -50,5 +50,29 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/autocomplete_fragment" />
+
+    <Spinner
+        android:id="@+id/VolumeList"
+        android:layout_width="87dp"
+        android:layout_height="26dp"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="160dp"
+        android:layout_marginRight="160dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/MangaName" />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginLeft="32dp"
+        android:layout_marginEnd="48dp"
+        android:layout_marginRight="48dp"
+        android:text="Volume :"
+        app:layout_constraintEnd_toStartOf="@+id/VolumeList"
+        app:layout_constraintHorizontal_bias="0.423"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/VolumeList" />
 
 </android.support.constraint.ConstraintLayout>

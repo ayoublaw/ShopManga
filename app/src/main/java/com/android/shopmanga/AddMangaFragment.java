@@ -126,11 +126,13 @@ public class AddMangaFragment extends Fragment {
                 progressbar.setVisibility(View.VISIBLE);
 
                 EditText mangaName = view.findViewById(R.id.AddMangaName);
+                EditText volume = view.findViewById(R.id.AddMangaVolume);
                 EditText price = view.findViewById(R.id.AddMangaPrice);
                 EditText sellerName = view.findViewById(R.id.AddMangaSellerName);
                 EditText telephone = view.findViewById(R.id.AddMangaTelephone);
 
                 String mangaNameString = mangaName.getText().toString();
+                String volumeString = volume.getText().toString();
                 String priceString = price.getText().toString();
                 String sellerNameString = sellerName.getText().toString();
                 String telephoneString = telephone.getText().toString();
@@ -141,6 +143,7 @@ public class AddMangaFragment extends Fragment {
                 JSONObject jsonBody = new JSONObject();
                 try {
                     jsonBody.put("name", mangaNameString);
+                    jsonBody.put("volume", volumeString);
                     jsonBody.put("price", priceString);
                     jsonBody.put("sellerName", sellerNameString);
                     jsonBody.put("telephone", telephoneString);

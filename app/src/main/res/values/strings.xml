@@ -14,4 +14,5 @@
     <string name="AddMangaFragement_sellerName">Seller Name</string>
     <string name="AddMangaFragement_telephone">Telephone</string>
     <string name="Button_ListManga">Liste</string>
+    <string name="AddMangaFragment_Volume">Volume</string>
 </resources>

@@ -13,22 +13,32 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.internal.LinkedTreeMap;
+import com.google.gson.reflect.TypeToken;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -36,11 +46,15 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import es.dmoral.toasty.Toasty;
 
@@ -49,6 +63,11 @@ public class SearchMangaFragment extends Fragment {
 
     private FusedLocationProviderClient client;
 
+    AutoCompleteTextView mangaName;
+    View view;
+
+    Map<String, List<Double>> listMangaExist = new HashMap<String, List<Double>>();
+    ArrayAdapter<Double> adapterSpinner;
     String mangaNametext;
     double lat, lng;
 
@@ -60,12 +79,43 @@ public class SearchMangaFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_search_manga, container, false);
+        view = inflater.inflate(R.layout.fragment_search_manga, container, false);
         client = LocationServices.getFusedLocationProviderClient(getActivity());
         Button button = view.findViewById(R.id.Searchbutton);
         Button myPositionButton = view.findViewById(R.id.MyPositionButton);
+        mangaName = view.findViewById(R.id.MangaName);
+
+        AutoCompletionTask myTask = new AutoCompletionTask();
+        myTask.execute();
+
+        Spinner listVolume = view.findViewById(R.id.VolumeList);
+
+        mangaName.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                String string = s.toString();
+                List<Double> list = listMangaExist.get(string);
+                if(list == null)
+                    adapterSpinner = new ArrayAdapter<Double>(getContext(),R.layout.support_simple_spinner_dropdown_item,new Double[]{});
+                else{
+                    adapterSpinner = new ArrayAdapter<Double>(getContext(),R.layout.support_simple_spinner_dropdown_item,list);
+                }
+                listVolume.setAdapter(adapterSpinner);
+            }
+        });
+
+
 
         AutocompleteSupportFragment autocompleteFragment = (AutocompleteSupportFragment) getChildFragmentManager().findFragmentById(R.id.autocomplete_fragment);
         EditText text = autocompleteFragment.getView().findViewById(R.id.places_autocomplete_search_input);
@@ -117,16 +167,16 @@ public class SearchMangaFragment extends Fragment {
             @Override
             public void onClick(View v) {
 
-                EditText mangaName = getView().findViewById(R.id.MangaName);
                 mangaNametext = mangaName.getText().toString();
 
-                //LatLngTask myTask = new LatLngTask();  //can pass other variables as needed
                 //myTask.execute(addressetext,mangaNametext);
 
                 Intent intent = new Intent(getActivity(), MapsActivity.class);
                 intent.putExtra("lat",lat);
                 intent.putExtra("lng",lng);
                 intent.putExtra("mangaName",mangaNametext);
+                if(listVolume.getSelectedItem() != null)
+                    intent.putExtra("volume",Double.valueOf(String.valueOf(listVolume.getSelectedItem())));
                 startActivity(intent);
 
 
@@ -138,16 +188,15 @@ public class SearchMangaFragment extends Fragment {
     private void requestPermission(){
         ActivityCompat.requestPermissions(getActivity(),new String[]{Manifest.permission.ACCESS_FINE_LOCATION},1);
     }
-   /* public class LatLngTask extends AsyncTask<String, Void , String> {
+    public class AutoCompletionTask extends AsyncTask<String, Void , String> {
 
         @Override
         protected String doInBackground(String... text) {
             StringBuilder jsonResults = new StringBuilder();
-            String googleMapUrl = "https://maps.googleapis.com/maps/api/geocode/json?address="
-                    + text[0]+ "&sensor=false&key=AIzaSyAejI8898winqzlekeYkhyJ2m1ZEPb3im0";
+            String apiUrl = "https://shopmangamobileapi.herokuapp.com/AllMangaAndVolume";
 
             try {
-                URL url = new URL(googleMapUrl);
+                URL url = new URL(apiUrl);
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                 InputStreamReader in = new InputStreamReader(
                         conn.getInputStream());
@@ -170,36 +219,14 @@ public class SearchMangaFragment extends Fragment {
                 response = "THERE WAS AN ERROR";
             }
             Log.i("INFO", response);
-            try {
-                JSONObject jsonObj = new JSONObject(response);
-                JSONArray resultJsonArray = jsonObj.getJSONArray("results");
+            Gson gson = new GsonBuilder().create();
+            Type typeOfHashMap = new TypeToken<Map<String, List<Double>>>() { }.getType();
+            listMangaExist = null;
+            listMangaExist = gson.fromJson(response, typeOfHashMap);
 
-                JSONObject before_geometry_jsonObj = resultJsonArray
-                        .getJSONObject(0);
+            ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(),R.layout.support_simple_spinner_dropdown_item, listMangaExist.keySet().toArray(new String[listMangaExist.keySet().size()]));
+            mangaName.setAdapter(adapter);
 
-                JSONObject geometry_jsonObj = before_geometry_jsonObj
-                        .getJSONObject("geometry");
-
-                JSONObject location_jsonObj = geometry_jsonObj
-                        .getJSONObject("location");
-
-                String lat_helper = location_jsonObj.getString("lat");
-                double lat = Double.valueOf(lat_helper);
-
-
-                String lng_helper = location_jsonObj.getString("lng");
-                double lng = Double.valueOf(lng_helper);
-
-                Intent intent = new Intent(getActivity(), MapsActivity.class);
-                intent.putExtra("lat",lat);
-                intent.putExtra("lng",lng);
-                intent.putExtra("mangaName",mangaNametext);
-                startActivity(intent);
-
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
         }
-    }*/
-
+    }
 }

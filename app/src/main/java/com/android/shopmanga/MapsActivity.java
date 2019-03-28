@@ -207,6 +207,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         jsonBody.put("name", getIntent().getStringExtra("mangaName"));
         jsonBody.put("lat", getIntent().getDoubleExtra("lat",0));
         jsonBody.put("lng",getIntent().getDoubleExtra("lng",0));
+        jsonBody.put("volume", getIntent().hasExtra("volume") ? getIntent().getDoubleExtra("volume",0) : null);
 
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
                 (Method.POST, url, jsonBody, new Response.Listener<JSONObject>() {
