@@ -5,6 +5,14 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET" />
 
+    <!-- PARTIE QUI CONCERNE LE TELEPHONE -->
+    <!-- Force cette application a n'etre accessible que pour les appareils disposant d'un telephone -->
+    <uses-feature
+        android:name="android.hardware.telephony"
+        android:required="true" />
+    <!-- Pour faire la demande d'autorisation de consulter l'etat du telephone -->
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
