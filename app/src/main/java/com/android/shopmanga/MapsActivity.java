@@ -200,7 +200,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     private void sendSelectRequest(@NonNull Style loadedMapStyle) throws JSONException {
-        RequestQueue queue = Volley.newRequestQueue(this);
+        RequestQueue    queue = Volley.newRequestQueue(this);
         String url ="https://shopmangamobileapi.herokuapp.com/SelectMangas";
 
         JSONObject jsonBody = new JSONObject();
@@ -311,6 +311,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         for(Manga m: mangaList){
             final PointF pixel = mapboxMap.getProjection().toScreenLocation(new LatLng(m.getLat(),m.getLng()));
             List<Feature> fs = mapboxMap.queryRenderedFeatures(pixel, "layer-id");
+            List<Feature> fsSelected = mapboxMap.queryRenderedFeatures(pixel, "selected-marker-layer");
             if(!fs.isEmpty()){
                 if(fs.get(0).geometry().equals(feature.geometry())){
                     detailsTextView.setText(
@@ -319,7 +320,16 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     );
                     mangaSelected = m;
                 }
+            }
+            if(!fsSelected.isEmpty()){
+                if(fsSelected.get(0).geometry().equals(feature.geometry())){
+                    detailsTextView.setText(
+                            "Price = " + m.getPrice() + "\n"
+                                    + m.getAddress()
+                    );
+                    mangaSelected = m;
                 }
+            }
             }
     }
     private void MakeLayoutVisible(Feature feature){

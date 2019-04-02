@@ -17,7 +17,7 @@
         android:layout_marginRight="16dp"
         android:ems="10"
         android:inputType="textPersonName"
-        android:text="@string/Manga_Name"
+        android:hint="@string/Manga_Name"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -53,11 +53,11 @@
 
     <Spinner
         android:id="@+id/VolumeList"
-        android:layout_width="87dp"
-        android:layout_height="26dp"
+        android:layout_width="109dp"
+        android:layout_height="24dp"
         android:layout_marginTop="32dp"
-        android:layout_marginEnd="160dp"
-        android:layout_marginRight="160dp"
+        android:layout_marginEnd="100dp"
+        android:layout_marginRight="100dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/MangaName" />
 
@@ -69,7 +69,7 @@
         android:layout_marginLeft="32dp"
         android:layout_marginEnd="48dp"
         android:layout_marginRight="48dp"
-        android:text="Volume :"
+        android:hint="Volume :"
         app:layout_constraintEnd_toStartOf="@+id/VolumeList"
         app:layout_constraintHorizontal_bias="0.423"
         app:layout_constraintStart_toStartOf="parent"

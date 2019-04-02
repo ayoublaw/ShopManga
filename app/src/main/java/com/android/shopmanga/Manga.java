@@ -16,6 +16,8 @@ public class Manga implements Serializable, Parcelable {
     private String sellerName;
     private String telephone;
     private String mangaName;
+    private String imageUrl;
+
 
     public Manga(String address, double lat, double lng, int price, String sellerName, String telephone, String mangaName) {
         this.address = address;
@@ -25,6 +27,7 @@ public class Manga implements Serializable, Parcelable {
         this.sellerName = sellerName;
         this.telephone = telephone;
         this.mangaName = mangaName;
+        this.imageUrl = imageUrl;
     }
 
     public Manga(JSONObject json) throws JSONException {
@@ -35,6 +38,7 @@ public class Manga implements Serializable, Parcelable {
             this.sellerName = json.getJSONObject("map").getString("sellerName");
             this.telephone = json.getJSONObject("map").getString("telephone");
             this.mangaName= json.getJSONObject("map").getString("mangaName");
+            this.imageUrl = json.getJSONObject("map").has("imageUrl") ? json.getJSONObject("map").getString("imageUrl") : null;
     }
 
     public String getAddress() {
@@ -93,6 +97,14 @@ public class Manga implements Serializable, Parcelable {
         this.mangaName = mangaName;
     }
 
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -107,6 +119,7 @@ public class Manga implements Serializable, Parcelable {
         dest.writeString(sellerName);
         dest.writeString(telephone);
         dest.writeString(mangaName);
+        dest.writeString(imageUrl);
     }
     public static final Parcelable.Creator<Manga> CREATOR
             = new Parcelable.Creator<Manga>() {
@@ -128,5 +141,6 @@ public class Manga implements Serializable, Parcelable {
         sellerName = in.readString();
         telephone = in.readString();
         mangaName = in.readString();
+        imageUrl = in.readString();
     }
 }

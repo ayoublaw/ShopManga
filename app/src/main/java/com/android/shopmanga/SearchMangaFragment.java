@@ -107,8 +107,9 @@ public class SearchMangaFragment extends Fragment {
                 String string = s.toString();
                 List<Double> list = listMangaExist.get(string);
                 if(list == null)
-                    adapterSpinner = new ArrayAdapter<Double>(getContext(),R.layout.support_simple_spinner_dropdown_item,new Double[]{});
+                    adapterSpinner = new ArrayAdapter<Double>(getContext(),R.layout.support_simple_spinner_dropdown_item,new Double[]{Double.NaN});
                 else{
+                    list.add(Double.NaN);
                     adapterSpinner = new ArrayAdapter<Double>(getContext(),R.layout.support_simple_spinner_dropdown_item,list);
                 }
                 listVolume.setAdapter(adapterSpinner);
@@ -122,7 +123,7 @@ public class SearchMangaFragment extends Fragment {
         autocompleteFragment.getView().findViewById(R.id.places_autocomplete_search_button).setVisibility(View.GONE);
 
         Places.initialize(getContext(), "AIzaSyAejI8898winqzlekeYkhyJ2m1ZEPb3im0");
-        autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ADDRESS, Place.Field.LAT_LNG));
+        autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID,Place.Field.NAME,Place.Field.ADDRESS, Place.Field.LAT_LNG));
 
         autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
@@ -175,7 +176,7 @@ public class SearchMangaFragment extends Fragment {
                 intent.putExtra("lat",lat);
                 intent.putExtra("lng",lng);
                 intent.putExtra("mangaName",mangaNametext);
-                if(listVolume.getSelectedItem() != null)
+                if(!listVolume.getSelectedItem().toString().equals("NaN"))
                     intent.putExtra("volume",Double.valueOf(String.valueOf(listVolume.getSelectedItem())));
                 startActivity(intent);
 
