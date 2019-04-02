@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     tools:context=".AddMangaFragment">
 
-    <EditText
+    <AutoCompleteTextView
         android:id="@+id/AddMangaName"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -17,7 +17,7 @@
         android:layout_marginRight="16dp"
         android:ems="10"
         android:inputType="textPersonName"
-        android:text="@string/AddMangaFragement_name"
+        android:hint="@string/AddMangaFragement_name"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -33,7 +33,7 @@
         android:layout_marginRight="16dp"
         android:ems="10"
         android:inputType="textPersonName"
-        android:text="@string/AddMangaFragement_sellerName"
+        android:hint="@string/AddMangaFragement_sellerName"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/AddMangaPrice" />
@@ -49,26 +49,26 @@
         android:layout_marginRight="16dp"
         android:ems="10"
         android:inputType="textPersonName"
-        android:text="@string/AddMangaFragement_telephone"
+        android:hint="@string/AddMangaFragement_telephone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/AddMangaSellerName" />
 
-    <EditText
-        android:id="@+id/AddMangaAddres"
-        android:layout_width="0dp"
+    <fragment
+        android:id="@+id/AddManga_autocomplete_fragment"
+        android:name="com.google.android.libraries.places.widget.AutocompleteSupportFragment"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginLeft="16dp"
         android:layout_marginTop="32dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginRight="16dp"
-        android:ems="10"
-        android:inputType="textPersonName"
-        android:text="@string/Address_Search"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/AddMangaTelephone" />
+        app:layout_constraintTop_toBottomOf="@+id/AddMangaTelephone"
+        tools:layout_editor_absoluteX="0dp">
+
+        <Button
+            android:id="@+id/AddManga_MyPositionButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="My Position" />
+    </fragment>
 
     <Button
         android:id="@+id/AddFragementButton"
@@ -83,7 +83,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/AddMangaAddres" />
+        app:layout_constraintTop_toBottomOf="@+id/AddManga_autocomplete_fragment" />
 
     <EditText
         android:id="@+id/AddMangaPrice"
@@ -96,10 +96,11 @@
         android:layout_marginRight="16dp"
         android:ems="10"
         android:inputType="number"
-        android:text="@string/AddMangaFragement_price"
+        android:hint="@string/AddMangaFragement_price"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/AddMangaName" />
+        app:layout_constraintTop_toBottomOf="@+id/AddMangaVolume" />
 
     <ProgressBar
         android:id="@+id/AddMangaFragmentprogressBar"
@@ -117,4 +118,20 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/AddMangaVolume"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        android:ems="10"
+        android:inputType="number"
+        android:hint="@string/AddMangaFragment_Volume"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/AddMangaName" />
 </android.support.constraint.ConstraintLayout>

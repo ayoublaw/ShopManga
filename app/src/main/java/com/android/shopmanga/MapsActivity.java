@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.graphics.PointF;
 import android.net.Uri;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -47,6 +48,7 @@ import org.json.JSONObject;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -198,13 +200,14 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     private void sendSelectRequest(@NonNull Style loadedMapStyle) throws JSONException {
-        RequestQueue queue = Volley.newRequestQueue(this);
+        RequestQueue    queue = Volley.newRequestQueue(this);
         String url ="https://shopmangamobileapi.herokuapp.com/SelectMangas";
 
         JSONObject jsonBody = new JSONObject();
         jsonBody.put("name", getIntent().getStringExtra("mangaName"));
         jsonBody.put("lat", getIntent().getDoubleExtra("lat",0));
         jsonBody.put("lng",getIntent().getDoubleExtra("lng",0));
+        jsonBody.put("volume", getIntent().hasExtra("volume") ? getIntent().getDoubleExtra("volume",0) : null);
 
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
                 (Method.POST, url, jsonBody, new Response.Listener<JSONObject>() {
@@ -308,6 +311,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         for(Manga m: mangaList){
             final PointF pixel = mapboxMap.getProjection().toScreenLocation(new LatLng(m.getLat(),m.getLng()));
             List<Feature> fs = mapboxMap.queryRenderedFeatures(pixel, "layer-id");
+            List<Feature> fsSelected = mapboxMap.queryRenderedFeatures(pixel, "selected-marker-layer");
             if(!fs.isEmpty()){
                 if(fs.get(0).geometry().equals(feature.geometry())){
                     detailsTextView.setText(
@@ -316,7 +320,16 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     );
                     mangaSelected = m;
                 }
+            }
+            if(!fsSelected.isEmpty()){
+                if(fsSelected.get(0).geometry().equals(feature.geometry())){
+                    detailsTextView.setText(
+                            "Price = " + m.getPrice() + "\n"
+                                    + m.getAddress()
+                    );
+                    mangaSelected = m;
                 }
+            }
             }
     }
     private void MakeLayoutVisible(Feature feature){
@@ -336,8 +349,15 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     public void sendToMangaDetailsActivity(View view) {
         Intent intent = new Intent(this, MangadetailsActivity.class);
-        intent.putExtra("manga",mangaSelected);
+        intent.putExtra("manga", (Serializable) mangaSelected);
         startActivity(intent);
 
+    }
+
+    public void listMangaView(View view) {
+
+        Intent intent = new Intent(this, List_MangaActivity.class);
+        intent.putParcelableArrayListExtra("mangaList", (ArrayList<? extends Parcelable>) mangaList);
+        startActivity(intent);
     }
 }

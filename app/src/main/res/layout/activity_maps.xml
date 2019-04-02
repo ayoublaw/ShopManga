@@ -15,6 +15,12 @@
         tools:layout_editor_absoluteX="0dp"
         tools:layout_editor_absoluteY="29dp">
 
+        <Button
+            android:id="@+id/button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="listMangaView"
+            android:text="@string/Button_ListManga" />
     </com.mapbox.mapboxsdk.maps.MapView>
 
     <android.support.constraint.ConstraintLayout
