@@ -93,7 +93,7 @@ public class AddMangaFragment extends Fragment {
         EditText text = autocompleteFragment.getView().findViewById(R.id.places_autocomplete_search_input);
         autocompleteFragment.getView().findViewById(R.id.places_autocomplete_search_button).setVisibility(View.GONE);
         Places.initialize(getContext(), "AIzaSyAejI8898winqzlekeYkhyJ2m1ZEPb3im0");
-        autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ADDRESS, Place.Field.LAT_LNG));
+        autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID,Place.Field.NAME, Place.Field.ADDRESS, Place.Field.LAT_LNG));
         mangaName = view.findViewById(R.id.AddMangaName);
 
 
@@ -127,7 +127,7 @@ public class AddMangaFragment extends Fragment {
                     public void onSuccess(Location location) {
                         try {
                             String s = getAddressFromLatLng(location.getLatitude(),location.getLongitude());
-                            text.setText(s);
+                            text.setText("My position");
                             address = s;
                         } catch (IOException e) {
                             e.printStackTrace();

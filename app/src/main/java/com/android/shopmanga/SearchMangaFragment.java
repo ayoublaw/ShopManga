@@ -50,6 +50,7 @@ import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -67,7 +68,7 @@ public class SearchMangaFragment extends Fragment {
     View view;
 
     Map<String, List<Double>> listMangaExist = new HashMap<String, List<Double>>();
-    ArrayAdapter<Double> adapterSpinner;
+    ArrayAdapter<String> adapterSpinner;
     String mangaNametext;
     double lat, lng;
 
@@ -105,17 +106,18 @@ public class SearchMangaFragment extends Fragment {
             @Override
             public void afterTextChanged(Editable s) {
                 String string = s.toString();
-                List<Double> list = listMangaExist.get(string);
-                if(list == null)
-                    adapterSpinner = new ArrayAdapter<Double>(getContext(),R.layout.support_simple_spinner_dropdown_item,new Double[]{Double.NaN});
+                List<String> list = new ArrayList<>();
+
+                if(listMangaExist.get(string) == null)
+                    adapterSpinner = new ArrayAdapter<String>(getContext(),R.layout.support_simple_spinner_dropdown_item,new String[]{});
                 else{
-                    list.add(Double.NaN);
-                    adapterSpinner = new ArrayAdapter<Double>(getContext(),R.layout.support_simple_spinner_dropdown_item,list);
+                    list.add("All");
+                    list.addAll(convertDoubleToString(listMangaExist.get(string)));
+                    adapterSpinner = new ArrayAdapter<String>(getContext(),R.layout.support_simple_spinner_dropdown_item,list);
                 }
                 listVolume.setAdapter(adapterSpinner);
             }
         });
-
 
 
         AutocompleteSupportFragment autocompleteFragment = (AutocompleteSupportFragment) getChildFragmentManager().findFragmentById(R.id.autocomplete_fragment);
@@ -172,15 +174,19 @@ public class SearchMangaFragment extends Fragment {
 
                 //myTask.execute(addressetext,mangaNametext);
 
-                Intent intent = new Intent(getActivity(), MapsActivity.class);
-                intent.putExtra("lat",lat);
-                intent.putExtra("lng",lng);
-                intent.putExtra("mangaName",mangaNametext);
-                if(!listVolume.getSelectedItem().toString().equals("NaN"))
-                    intent.putExtra("volume",Double.valueOf(String.valueOf(listVolume.getSelectedItem())));
-                startActivity(intent);
-
-
+                if(listMangaExist.get(mangaNametext) == null)
+                {
+                    Toasty.error(getContext(),"Error : Manga name not exists",Toasty.LENGTH_LONG).show();
+                }
+                else {
+                    Intent intent = new Intent(getActivity(), MapsActivity.class);
+                    intent.putExtra("lat", lat);
+                    intent.putExtra("lng", lng);
+                    intent.putExtra("mangaName", mangaNametext);
+                    if (!listVolume.getSelectedItem().toString().equals("All"))
+                        intent.putExtra("volume", Double.valueOf(String.valueOf(listVolume.getSelectedItem())));
+                    startActivity(intent);
+                }
             }
         });
         return view;
@@ -229,5 +235,12 @@ public class SearchMangaFragment extends Fragment {
             mangaName.setAdapter(adapter);
 
         }
+    }
+    private List<String> convertDoubleToString(List<Double> ds){
+        List<String> strings = new ArrayList<String>();
+        for (Double d : ds) {
+            strings.add(d.toString());
+        }
+        return strings;
     }
 }
