@@ -1,18 +1,14 @@
 package com.android.shopmanga;
 
 import android.Manifest;
-import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.location.Geocoder;
 import android.location.Location;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.Fragment;
+import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
+import androidx.fragment.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -28,7 +24,6 @@ import android.widget.Spinner;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.libraries.places.api.Places;
@@ -37,12 +32,7 @@ import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.internal.LinkedTreeMap;
 import com.google.gson.reflect.TypeToken;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -54,7 +44,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 import es.dmoral.toasty.Toasty;
@@ -64,13 +53,13 @@ public class SearchMangaFragment extends Fragment {
 
     private FusedLocationProviderClient client;
 
-    AutoCompleteTextView mangaName;
-    View view;
+    private AutoCompleteTextView mangaName;
+    private View view;
 
-    Map<String, List<Double>> listMangaExist = new HashMap<String, List<Double>>();
-    ArrayAdapter<String> adapterSpinner;
-    String mangaNametext;
-    double lat, lng;
+    private Map<String, List<Double>> listMangaExist = new HashMap<String, List<Double>>();
+    private ArrayAdapter<String> adapterSpinner;
+    private String mangaNametext;
+    private double lat, lng;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

@@ -1,18 +1,22 @@
 package com.android.shopmanga;
 
-import android.support.design.widget.TabLayout;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
+import com.google.android.material.tabs.TabLayout;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentPagerAdapter;
+import androidx.viewpager.widget.ViewPager;
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
+import androidx.appcompat.widget.Toolbar;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.room.Room;
+
 public class MainActivity extends AppCompatActivity {
+
+    public static AppDatabase appDatabase;
 
     private Toolbar toolbar;
     private TabLayout tabLayout;
@@ -22,6 +26,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        appDatabase= Room.databaseBuilder(getApplicationContext(),
+                AppDatabase.class, "MangaDB").addMigrations(Manga.MIGRATION_1_2).addMigrations(Manga.MIGRATION_3_4).allowMainThreadQueries().build();
 
         toolbar = findViewById(R.id.mytoolbar);
         setSupportActionBar(toolbar);
@@ -36,6 +43,7 @@ public class MainActivity extends AppCompatActivity {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
         adapter.addFragment(new AddMangaFragment(), "AddManga");
         adapter.addFragment(new SearchMangaFragment(),"SearchManga");
+        adapter.addFragment(new MyMangaFragment(), "MyManga");
         viewPager.setAdapter(adapter);
     }
     class ViewPagerAdapter extends FragmentPagerAdapter {
@@ -66,4 +74,6 @@ public class MainActivity extends AppCompatActivity {
             return mFragmentTitleList.get(position);
         }
     }
+
+
 }

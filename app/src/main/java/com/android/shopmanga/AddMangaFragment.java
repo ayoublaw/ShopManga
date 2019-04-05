@@ -1,20 +1,16 @@
 package com.android.shopmanga;
 
 import android.Manifest;
-import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.Fragment;
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.util.Log;
+import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
+import androidx.fragment.app.Fragment;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,7 +20,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 
-import com.android.volley.Request;
 import com.android.volley.Request.Method;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -40,11 +35,6 @@ import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.google.gson.reflect.TypeToken;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -52,8 +42,6 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.lang.reflect.Type;
-import java.math.BigDecimal;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -70,12 +58,13 @@ import es.dmoral.toasty.Toasty;
 public class AddMangaFragment extends Fragment {
 
     private FusedLocationProviderClient client;
-    String address;
-    AutoCompleteTextView mangaName;
+    private AutoCompleteTextView mangaName;
 
-    List<String> listMangaName;
-    Map<String,String> listMangaNameAndUrl;
+    private List<String> listMangaName;
+    private Map<String,String> listMangaNameAndUrl;
 
+    private String address;
+    private Manga newManga;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -170,6 +159,7 @@ public class AddMangaFragment extends Fragment {
                 RequestQueue queue = Volley.newRequestQueue(getContext());
                 String url ="https://shopmangamobileapi.herokuapp.com/AddManga";
 
+                newManga = new Manga(address,0,0,Integer.parseInt(priceString),sellerNameString,telephoneString,mangaNameString, imageUrl,Double.parseDouble(volumeString));
                 JSONObject jsonBody = new JSONObject();
                 try {
                     jsonBody.put("name", mangaNameString);
@@ -189,6 +179,7 @@ public class AddMangaFragment extends Fragment {
                     public void onResponse(JSONObject response) {
                         progressbar.setVisibility(View.GONE);
                         Toasty.success(getContext(),"Operation succed",Toasty.LENGTH_LONG).show();
+                        MainActivity.appDatabase.mangaDao().insertAll(newManga);
                     }
                 }, new Response.ErrorListener() {
                     @Override

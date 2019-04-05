@@ -1,8 +1,8 @@
 package com.android.shopmanga;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,11 +14,10 @@ import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
-import java.util.Objects;
 
 public class TodoAdapter extends ArrayAdapter<Manga> {
     private final int layout;
-    ImageView image;
+    private ImageView image;
 
     public TodoAdapter(@NonNull Context context, int resource, @NonNull List<Manga> objects) {
         super(context, resource, objects);
@@ -45,7 +44,8 @@ public class TodoAdapter extends ArrayAdapter<Manga> {
         TextView itemMangaAddress= view.findViewById(R.id.ItemMangaAddress);
         image = view.findViewById(R.id.listImageView);
 
-        LoadImageFromUrl("https://cdn.mangaeden.com/mangasimg/"+ item.getImageUrl());
+        if(image != null)
+            LoadImageFromUrl("https://cdn.mangaeden.com/mangasimg/"+ item.getImageUrl());
         itemMangaName.setText(item.getMangaName());
         itemMangaAddress.setText(item.getAddress());
         itemMangaPrice.setText(Double.toString(item.getPrice()) + " euro");

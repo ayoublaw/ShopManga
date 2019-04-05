@@ -8,18 +8,44 @@ import org.json.JSONObject;
 
 import java.io.Serializable;
 
+import javax.annotation.Nullable;
+
+import androidx.annotation.NonNull;
+import androidx.room.ColumnInfo;
+import androidx.room.Entity;
+import androidx.room.Ignore;
+import androidx.room.PrimaryKey;
+import androidx.room.migration.Migration;
+import androidx.sqlite.db.SupportSQLiteDatabase;
+
+@Entity
 public class Manga implements Serializable, Parcelable {
+
+    @PrimaryKey(autoGenerate = true)
+    private int id;
+    @ColumnInfo
     private String address;
+    @ColumnInfo()
+    @Nullable
     private double lat;
+    @ColumnInfo
+    @Nullable
     private double lng;
+    @ColumnInfo
     private int price;
+    @ColumnInfo
     private String sellerName;
+    @ColumnInfo
     private String telephone;
+    @ColumnInfo
     private String mangaName;
+    @ColumnInfo
     private String imageUrl;
+    @ColumnInfo
+    private Double volume;
 
 
-    public Manga(String address, double lat, double lng, int price, String sellerName, String telephone, String mangaName) {
+    public Manga(String address, double lat, double lng, int price, String sellerName, String telephone, String mangaName, String imageUrl,Double volume) {
         this.address = address;
         this.lat = lat;
         this.lng = lng;
@@ -28,8 +54,10 @@ public class Manga implements Serializable, Parcelable {
         this.telephone = telephone;
         this.mangaName = mangaName;
         this.imageUrl = imageUrl;
+        this.volume = volume;
     }
 
+    @Ignore
     public Manga(JSONObject json) throws JSONException {
             this.address = json.getJSONObject("map").getJSONObject("address").getJSONObject("map").getString("address");
             this.lat = json.getJSONObject("map").getJSONObject("address").getJSONObject("map").getDouble("lat");
@@ -39,6 +67,7 @@ public class Manga implements Serializable, Parcelable {
             this.telephone = json.getJSONObject("map").getString("telephone");
             this.mangaName= json.getJSONObject("map").getString("mangaName");
             this.imageUrl = json.getJSONObject("map").has("imageUrl") ? json.getJSONObject("map").getString("imageUrl") : null;
+            this.volume = json.getJSONObject("map").getDouble("volume");
     }
 
     public String getAddress() {
@@ -105,6 +134,23 @@ public class Manga implements Serializable, Parcelable {
         this.imageUrl = imageUrl;
     }
 
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public Double getVolume() {
+        return volume;
+    }
+
+    public void setVolume(Double volume) {
+        this.volume = volume;
+    }
+
+
     @Override
     public int describeContents() {
         return 0;
@@ -120,6 +166,7 @@ public class Manga implements Serializable, Parcelable {
         dest.writeString(telephone);
         dest.writeString(mangaName);
         dest.writeString(imageUrl);
+        dest.writeDouble(volume);
     }
     public static final Parcelable.Creator<Manga> CREATOR
             = new Parcelable.Creator<Manga>() {
@@ -142,5 +189,19 @@ public class Manga implements Serializable, Parcelable {
         telephone = in.readString();
         mangaName = in.readString();
         imageUrl = in.readString();
+        volume = in.readDouble();
     }
+    static final Migration MIGRATION_1_2 = new Migration(1,2) {
+        @Override
+        public void migrate(@NonNull SupportSQLiteDatabase database) {
+            database.execSQL("ALTER TABLE manga "
+                    +"ADD COLUMN volume DOUBLE");
+        }
+    };
+    static final Migration MIGRATION_3_4 = new Migration(3,4) {
+        @Override
+        public void migrate(@NonNull SupportSQLiteDatabase database) {
+
+        }
+    };
 }
