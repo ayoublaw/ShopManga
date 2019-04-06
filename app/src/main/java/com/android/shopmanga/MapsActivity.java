@@ -236,24 +236,15 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                                 getIntent().getDoubleExtra("lng",0)))
         );
 
-        loadedMapStyle.addImage("addresse-position-id", BitmapUtils.getBitmapFromDrawable(
-                getResources().getDrawable(R.drawable.mapbox_mylocation_icon_default)));
-
         loadedMapStyle.addImage("icon-id", BitmapUtils.getBitmapFromDrawable(
-                getResources().getDrawable(R.drawable.mapbox_markerview_icon_default)));
+                getResources().getDrawable(R.drawable.icon_pokemon)));
+
+        loadedMapStyle.addImage("addresse-position-id", BitmapUtils.getBitmapFromDrawable(
+                getResources().getDrawable(R.drawable.selected_icon)));
 
         loadedMapStyle.addImage("selected-marker-image", BitmapFactory.decodeResource(
-                MapsActivity.this.getResources(),R.drawable.selected_icon));
+                MapsActivity.this.getResources(),R.drawable.icon_poke_selected));
 
-        //addresse Icons
-        loadedMapStyle.addSource(new GeoJsonSource("addresse-id",
-                FeatureCollection.fromFeatures(AddressemarkerCoordinates)));
-
-        loadedMapStyle.addLayer(new SymbolLayer("addresse-layer-id","addresse-id")
-                .withProperties(
-                        iconImage("addresse-position-id"),
-                        iconOffset(new Float[]{0f,-8f})
-                ));
 
         //Mangas Icons
         loadedMapStyle.addSource(new GeoJsonSource("source-id",
@@ -263,6 +254,16 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 .withProperties(
                         iconImage("icon-id"),
                         iconOffset(new Float[]{0f,-8f})
+                ));
+
+        //addresse Icons
+        loadedMapStyle.addSource(new GeoJsonSource("addresse-id",
+                FeatureCollection.fromFeatures(AddressemarkerCoordinates)));
+
+        loadedMapStyle.addLayer(new SymbolLayer("addresse-layer-id","addresse-id")
+                .withProperties(
+                        iconImage("addresse-position-id"),
+                        iconOffset(new Float[]{0f,-10f})
                 ));
 
         //Mangas selected Icons
