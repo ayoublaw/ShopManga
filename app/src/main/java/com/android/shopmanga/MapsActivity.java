@@ -303,7 +303,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             if(!fs.isEmpty()){
                 if(fs.get(0).geometry().equals(feature.geometry())){
                     detailsTextView.setText(
-                            "Price = " + m.getPrice() + "\n"
+                            "Price = " + m.getPrice() + "\n" +
+                            "Volume = " + m.getVolume() +  "\n"
                                     + m.getAddress()
                     );
                     mangaSelected = m;

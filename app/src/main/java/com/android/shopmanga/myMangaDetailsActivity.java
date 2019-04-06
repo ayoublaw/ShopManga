@@ -37,13 +37,16 @@ public class myMangaDetailsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_manga_details);
         context = this;
-        Manga manga = (Manga) getIntent().getSerializableExtra("manga");
+        String mangaId  = getIntent().getStringExtra("mangaId");
+        Manga manga = MainActivity.appDatabase.mangaDao().loadById(mangaId);
+
 
         TextView mangaName = findViewById(R.id.myMangamangaName);
         TextView price = findViewById(R.id.myMangaprice);
         TextView sellerName = findViewById(R.id.myMangasellerName);
         TextView address = findViewById(R.id.myMangaaddress);
         TextView telephone = findViewById(R.id.myMangatelephone);
+        TextView volume = findViewById(R.id.MyMangaVolume);
         image = findViewById(R.id.myMangaimageView);
         LoadImageFromUrl("https://cdn.mangaeden.com/mangasimg/"+ manga.getImageUrl());
 
@@ -52,6 +55,7 @@ public class myMangaDetailsActivity extends AppCompatActivity {
         sellerName.setText("Seller Name : "+manga.getSellerName());
         address.setText(   "Addresse :    "+manga.getAddress());
         telephone.setText( "Telephone :   "+manga.getTelephone());
+        volume.setText(    "Volume :      "+manga.getVolume()  );
 
         Button deleteButton = findViewById(R.id.myMangabutton);
         deleteButton.setOnClickListener(new View.OnClickListener() {
@@ -76,6 +80,8 @@ public class myMangaDetailsActivity extends AppCompatActivity {
                     public void onResponse(JSONObject response) {
                         Toasty.success(context,"Operation succed",Toasty.LENGTH_LONG).show();
                         MainActivity.appDatabase.mangaDao().delete(manga);
+                        Intent intent = new Intent(context, MainActivity.class);
+                        startActivity(intent);
                     }
                 }, new Response.ErrorListener() {
                     @Override

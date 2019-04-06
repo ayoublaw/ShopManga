@@ -12,6 +12,9 @@ public interface MangaDao {
     @Query("SELECT * FROM manga")
     List<Manga> getAll();
 
+    @Query("SELECT * FROM manga WHERE id = :userIds")
+    Manga loadById(String userIds);
+
     @Insert
     void insertAll(Manga... mangas);
 

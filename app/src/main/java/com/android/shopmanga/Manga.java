@@ -21,8 +21,9 @@ import androidx.sqlite.db.SupportSQLiteDatabase;
 @Entity
 public class Manga implements Serializable, Parcelable {
 
-    @PrimaryKey(autoGenerate = true)
-    private int id;
+    @PrimaryKey
+    @NonNull
+    private String id;
     @ColumnInfo
     private String address;
     @ColumnInfo()
@@ -45,7 +46,8 @@ public class Manga implements Serializable, Parcelable {
     private Double volume;
 
 
-    public Manga(String address, double lat, double lng, int price, String sellerName, String telephone, String mangaName, String imageUrl,Double volume) {
+    public Manga(String id,String address, double lat, double lng, int price, String sellerName, String telephone, String mangaName, String imageUrl,Double volume) {
+        this.id = id;
         this.address = address;
         this.lat = lat;
         this.lng = lng;
@@ -56,6 +58,7 @@ public class Manga implements Serializable, Parcelable {
         this.imageUrl = imageUrl;
         this.volume = volume;
     }
+
 
     @Ignore
     public Manga(JSONObject json) throws JSONException {
@@ -134,11 +137,11 @@ public class Manga implements Serializable, Parcelable {
         this.imageUrl = imageUrl;
     }
 
-    public Integer getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(String id) {
         this.id = id;
     }
 

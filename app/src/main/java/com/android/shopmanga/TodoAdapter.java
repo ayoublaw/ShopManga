@@ -42,6 +42,7 @@ public class TodoAdapter extends ArrayAdapter<Manga> {
         TextView itemMangaName = view.findViewById(R.id.ItemMangaName);
         TextView itemMangaPrice = view.findViewById(R.id.ItemMangaPrice);
         TextView itemMangaAddress= view.findViewById(R.id.ItemMangaAddress);
+        TextView itemMangaVolume = view.findViewById(R.id.ItemMangaVolume);
         image = view.findViewById(R.id.listImageView);
 
         if(image != null)
@@ -49,6 +50,7 @@ public class TodoAdapter extends ArrayAdapter<Manga> {
         itemMangaName.setText(item.getMangaName());
         itemMangaAddress.setText(item.getAddress());
         itemMangaPrice.setText(Double.toString(item.getPrice()) + " euro");
+        itemMangaVolume.setText(Double.toString(item.getVolume()));
 
         return view;
 

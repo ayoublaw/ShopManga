@@ -51,6 +51,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.UUID;
 
 import es.dmoral.toasty.Toasty;
 
@@ -115,9 +116,13 @@ public class AddMangaFragment extends Fragment {
                     @Override
                     public void onSuccess(Location location) {
                         try {
+                            if(location != null){
                             String s = getAddressFromLatLng(location.getLatitude(),location.getLongitude());
                             text.setText("My position");
                             address = s;
+                            }
+                            else
+                                Toasty.error(getContext(),"Error : Activate your location",Toasty.LENGTH_LONG).show();
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -159,7 +164,7 @@ public class AddMangaFragment extends Fragment {
                 RequestQueue queue = Volley.newRequestQueue(getContext());
                 String url ="https://shopmangamobileapi.herokuapp.com/AddManga";
 
-                newManga = new Manga(address,0,0,Integer.parseInt(priceString),sellerNameString,telephoneString,mangaNameString, imageUrl,Double.parseDouble(volumeString));
+                newManga = new Manga(UUID.randomUUID().toString(),address,0,0,Integer.parseInt(priceString),sellerNameString,telephoneString,mangaNameString, imageUrl,Double.parseDouble(volumeString));
                 JSONObject jsonBody = new JSONObject();
                 try {
                     jsonBody.put("name", mangaNameString);

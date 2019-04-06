@@ -40,7 +40,7 @@ public class MyMangaFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
                 Intent intent = new Intent(getActivity(), myMangaDetailsActivity.class);
-                intent.putExtra("manga", (Serializable) items.get(position));
+                intent.putExtra("mangaId", items.get(position).getId());
                 startActivity(intent);
             }
         });

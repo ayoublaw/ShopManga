@@ -28,6 +28,7 @@ public class MangadetailsActivity extends AppCompatActivity {
         TextView sellerName = findViewById(R.id.sellerName);
         TextView address = findViewById(R.id.address);
         TextView telephone = findViewById(R.id.telephone);
+        TextView volume = findViewById(R.id.Volume);
         image = findViewById(R.id.imageView);
         LoadImageFromUrl("https://cdn.mangaeden.com/mangasimg/"+ manga.getImageUrl());
 
@@ -36,6 +37,7 @@ public class MangadetailsActivity extends AppCompatActivity {
         sellerName.setText("Seller Name : "+manga.getSellerName());
         address.setText(   "Addresse :    "+manga.getAddress());
         telephone.setText( "Telephone :   "+manga.getTelephone());
+        volume.setText(     "Volume :"+manga.getVolume() );
 
         // ici on gere le bouton call
         ImageView callButton = findViewById(R.id.call_button);
