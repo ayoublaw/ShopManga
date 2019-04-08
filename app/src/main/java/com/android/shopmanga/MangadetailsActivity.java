@@ -44,7 +44,7 @@ public class MangadetailsActivity extends AppCompatActivity {
         telephonyManager = (TelephonyManager) this.getSystemService(this.TELEPHONY_SERVICE);
         callButton.setOnClickListener(v -> {
             if(telephonyManager.getCallState() == TelephonyManager.CALL_STATE_IDLE) {
-                Intent appel = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + telephone.getText()));
+                Intent appel = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + manga.getTelephone()));
                 startActivity(appel);
             }
         });

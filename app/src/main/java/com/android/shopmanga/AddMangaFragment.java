@@ -1,6 +1,7 @@
 package com.android.shopmanga;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
@@ -147,7 +148,6 @@ public class AddMangaFragment extends Fragment {
             public void onClick(View v) {
 
                 ProgressBar progressbar = view.findViewById(R.id.AddMangaFragmentprogressBar);
-                progressbar.setVisibility(View.VISIBLE);
 
                 EditText volume = view.findViewById(R.id.AddMangaVolume);
                 EditText price = view.findViewById(R.id.AddMangaPrice);
@@ -161,39 +161,50 @@ public class AddMangaFragment extends Fragment {
                 String telephoneString = telephone.getText().toString();
                 String imageUrl = listMangaNameAndUrl.get(mangaNameString);
 
-                RequestQueue queue = Volley.newRequestQueue(getContext());
-                String url ="https://shopmangamobileapi.herokuapp.com/AddManga";
-
-                newManga = new Manga(UUID.randomUUID().toString(),address,0,0,Integer.parseInt(priceString),sellerNameString,telephoneString,mangaNameString, imageUrl,Double.parseDouble(volumeString));
-                JSONObject jsonBody = new JSONObject();
-                try {
-                    jsonBody.put("name", mangaNameString);
-                    jsonBody.put("volume", volumeString);
-                    jsonBody.put("price", priceString);
-                    jsonBody.put("sellerName", sellerNameString);
-                    jsonBody.put("telephone", telephoneString);
-                    jsonBody.put("adresse", address);
-                    jsonBody.put("imageUrl", imageUrl);
-                } catch (JSONException e) {
-                    e.printStackTrace();
+                if(mangaNameString.isEmpty() || volumeString.isEmpty() || priceString.isEmpty() || sellerNameString.isEmpty() || telephoneString.isEmpty() || address.isEmpty())
+                    Toasty.error(getContext(),"Error : Fill all the blanks",Toasty.LENGTH_LONG).show();
+                else if(!listMangaName.contains(mangaNameString))
+                {
+                    Toasty.error(getContext(),"Error : Manga name not exists",Toasty.LENGTH_LONG).show();
                 }
-                JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
-                        Method.POST, url, jsonBody, new Response.Listener<JSONObject>() {
+                else {
+                    progressbar.setVisibility(View.VISIBLE);
+                    RequestQueue queue = Volley.newRequestQueue(getContext());
+                    String url = "https://shopmangamobileapi.herokuapp.com/AddManga";
 
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        progressbar.setVisibility(View.GONE);
-                        Toasty.success(getContext(),"Operation succed",Toasty.LENGTH_LONG).show();
-                        MainActivity.appDatabase.mangaDao().insertAll(newManga);
+                    newManga = new Manga(UUID.randomUUID().toString(), address, 0, 0, Integer.parseInt(priceString), sellerNameString, telephoneString, mangaNameString, imageUrl, Double.parseDouble(volumeString));
+                    JSONObject jsonBody = new JSONObject();
+                    try {
+                        jsonBody.put("name", mangaNameString);
+                        jsonBody.put("volume", volumeString);
+                        jsonBody.put("price", priceString);
+                        jsonBody.put("sellerName", sellerNameString);
+                        jsonBody.put("telephone", telephoneString);
+                        jsonBody.put("adresse", address);
+                        jsonBody.put("imageUrl", imageUrl);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
                     }
-                }, new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        progressbar.setVisibility(View.GONE);
-                        Toasty.error(getContext(),"Error : We can't Add This manga",Toasty.LENGTH_LONG).show();
-                    }
-                });
-                queue.add(jsonObjectRequest);
+                    JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
+                            Method.POST, url, jsonBody, new Response.Listener<JSONObject>() {
+
+                        @Override
+                        public void onResponse(JSONObject response) {
+                            progressbar.setVisibility(View.GONE);
+                            Toasty.success(getContext(), "Operation succed", Toasty.LENGTH_LONG).show();
+                            MainActivity.appDatabase.mangaDao().insertAll(newManga);
+                            Intent intent = new Intent(getActivity(), MainActivity.class);
+                            startActivity(intent);
+                        }
+                    }, new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            progressbar.setVisibility(View.GONE);
+                            Toasty.error(getContext(), "Error : We can't Add This manga", Toasty.LENGTH_LONG).show();
+                        }
+                    });
+                    queue.add(jsonObjectRequest);
+                }
             }
         });
 
