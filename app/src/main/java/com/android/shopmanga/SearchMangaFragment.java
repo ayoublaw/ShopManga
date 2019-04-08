@@ -141,9 +141,13 @@ public class SearchMangaFragment extends Fragment {
                 client.getLastLocation().addOnSuccessListener(getActivity(), new OnSuccessListener<Location>() {
                     @Override
                     public void onSuccess(Location location) {
-                        text.setText("My position");
+                        if(location != null){
+                            text.setText("My position");
                         lat = location.getLatitude();
                         lng = location.getLongitude();
+                        }
+                        else
+                            Toasty.error(getContext(),"Error : Activate your location",Toasty.LENGTH_LONG).show();
                     }
                 });
                 client.getLastLocation().addOnFailureListener(getActivity(), new OnFailureListener() {
